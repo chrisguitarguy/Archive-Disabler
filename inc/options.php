@@ -222,7 +222,7 @@ class CD_AD_Admin_Options
             $rv .= $this->checkbox( 
                 $t, 
                 isset( $opts[$t] ) ? $opts[$t] : 'off', 
-                sprintf( __( 'Disable %s Archives', 'cd-archive-disabler' ), $label )
+                sprintf( __( 'Disable %s Archives', 'cd-archive-disabler' ), esc_html( $label ) )
             );
             $rv .= '<br />';
         }
