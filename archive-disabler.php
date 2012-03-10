@@ -46,14 +46,3 @@ function cd_ad_deactivation()
 {
     delete_option( 'cd_ad_options' );
 }
-
-
-// testing code so we have a post type archive to work with
-add_action( 'init', 'cdad_tester' );
-function cdad_tester()
-{
-    register_post_type(
-        'blah',
-        array( 'public' => true, 'has_archive' => true, 'label' => 'blah', 'labels' => array( 'singular_name' => 'one blah' ) )
-    );
-}

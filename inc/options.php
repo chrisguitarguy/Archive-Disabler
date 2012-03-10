@@ -74,6 +74,7 @@ class CD_AD_Admin_Options
         {
             $this->add_field( 'post_types', __( 'Post Type Archives', 'cd-archive-disabler' ) );
         }
+        $this->add_field( 'on_catch', __( 'Disabled archives should...', 'cd-archive-disabler' ) );
         
     }
     
@@ -129,9 +130,37 @@ class CD_AD_Admin_Options
         echo $this->list_display( $this->taxonomies() );
     }
     
+    
+    /**
+     * Callback for post type archives options
+     * 
+     * @since 1.0
+     */
     function post_types_field_cb()
     {
         echo $this->list_display( $this->types() );
+    }
+    
+    /**
+     * Callback for on_catch option
+     * 
+     * @since 1.0
+     */
+    function on_catch_field_cb( $args )
+    {
+        $actions = array(
+            'redirect'  => __( 'Redirect to the home page', 'cd-archive-disabler' ),
+            'error'     => __( 'Throw a 404 Not Found Error', 'cd-archive-disabler' )
+        );
+        foreach( $actions as $action => $label ):
+        ?>
+        <label for="<?php echo $this->setting; ?>[on_catch]">
+            <input type="radio" name="<?php echo $this->setting; ?>[on_catch]" id="<?php echo $this->setting; ?>[on_catch]" value="<?php echo $action; ?>" <?php checked( $args, $action ); ?> />
+            <?php echo esc_html( $label ); ?>
+        </label>
+        <br />
+        <?php
+        endforeach;
     }
     
     /**
@@ -147,6 +176,7 @@ class CD_AD_Admin_Options
         {
             $out[$i] = isset( $in[$i] ) && $in[$i] ? 'on' : 'off';
         }
+        $out['on_catch'] = isset( $in['on_catch'] ) && 'redirect' == $in['on_catch'] ? 'redirect' : 'error';
         return $out;
     }
     
@@ -173,7 +203,7 @@ class CD_AD_Admin_Options
         {
             foreach( $types as $t => $obj )
             {
-                $rv[$t] = isset( $obj->labels->singular_name ) ? $obj->labels->singular_name : $obj->label;
+                $rv['posttype_' . $t] = isset( $obj->labels->singular_name ) ? $obj->labels->singular_name : $obj->label;
             }
         }
         return $rv;
@@ -199,7 +229,7 @@ class CD_AD_Admin_Options
         {
             foreach( $taxes as $t => $obj )
             {
-                $rv[$t] = isset( $obj->labels->singular_name ) ? $obj->labels->singular_name : $obj->label;
+                $rv['taxonomy_' . $t] = isset( $obj->labels->singular_name ) ? $obj->labels->singular_name : $obj->label;
             }
         }
         
