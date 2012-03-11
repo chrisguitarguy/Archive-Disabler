@@ -42,7 +42,7 @@ class CD_AD_Admin_Options
     function __construct()
     {
         add_action( 'admin_init', array( &$this, 'setting' ) );
-        add_action( 'load-options-reading.php', array( &$this, 'load' ) );
+        add_action( 'admin_head-options-reading.php', array( &$this, 'add_help' ) );
         add_filter( 'plugin_action_links_' . CD_AD_NAME, array( &$this, 'actions' ) );
     }
     
@@ -183,21 +183,9 @@ class CD_AD_Admin_Options
     }
     
     /**
-     * Fired when `options-reading.php` loads.  Just adds an action to
-     * `admin_head
-     * 
-     * @since 1.0
-     * @uses add_action To hook into `admin_head`
-     */
-    function load()
-    {
-        add_action( 'admin_head', array( &$this, 'add_help' ) );
-    }
-    
-    /**
      * Fired on `admin_head` ong the `options-reading.php` page. This 
      * function adds a some things to the help drop down about Archive 
-     * Disabler.  It's hook into `admin_head` so it doesn't bump the 
+     * Disabler.  It's hooked into `admin_head` so it doesn't bump the 
      * default help down.
      * 
      * @since 1.0
