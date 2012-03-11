@@ -42,6 +42,8 @@ class CD_AD_Admin_Options
     function __construct()
     {
         add_action( 'admin_init', array( &$this, 'setting' ) );
+        add_action( 'load-options-reading.php', array( &$this, 'load' ) );
+        add_filter( 'plugin_action_links_' . CD_AD_NAME, array( &$this, 'actions' ) );
     }
     
     /**
@@ -86,7 +88,7 @@ class CD_AD_Admin_Options
     function section_cb()
     {
         ?>
-        <p class="description">
+        <p class="description" id="archive-disabler">
             <?php _e( 'Choose which archives you would like to disable.', 'cd-archive-disabler' ); ?>
         </p>
         <?php
@@ -181,6 +183,82 @@ class CD_AD_Admin_Options
     }
     
     /**
+     * Fired when `options-reading.php` loads.  Just adds an action to
+     * `admin_head
+     * 
+     * @since 1.0
+     * @uses add_action To hook into `admin_head`
+     */
+    function load()
+    {
+        add_action( 'admin_head', array( &$this, 'add_help' ) );
+    }
+    
+    /**
+     * Fired on `admin_head` ong the `options-reading.php` page. This 
+     * function adds a some things to the help drop down about Archive 
+     * Disabler.  It's hook into `admin_head` so it doesn't bump the 
+     * default help down.
+     * 
+     * @since 1.0
+     * @uses get_current_screen To fetch the WP_Screen object and add a tab
+     */
+    function add_help()
+    {
+        get_current_screen()->add_help_tab( array( 
+            'id'       => 'cd-ad-help-tab',
+            'title'    => __( 'Archive Disabler', 'cd-archive-disabler' ),
+            'callback' => array( &$this, 'help_cb' )
+        ) );
+    }
+    
+    /**
+     * Help tab callback.  Displays the content for the Archive Disabler
+     * help tab.
+     * 
+     * @since 1.0
+     */
+    function help_cb()
+    {
+        echo '<p>';
+        esc_html_e( 
+            'Archive Disabler allows you to "disable" the various WordPress archive pages. ' .
+            'To do so, check the archives you wish to have disabled below.',
+            'cd-archive-disabler'
+        );
+        echo '</p><p>';
+        esc_html_e(
+            'Depending on your options, the disabled archives will redirect to the home page or simply 404. ' .
+            'Redirecting archives, especially if they were previously enabled, is recommended.',
+            'cd-archive-disabler'
+        );
+        echo '</p><p>';
+        printf(
+            __( 'Learn more about the author of Archive Disabler, %s.  Problems? Report bugs here: %s', 'cd-archive-disabler' ),
+            '<a href="http://christopherdavis.me" target="_blank">Christopher Davis</a>',
+            '<a href="https://github.com/chrisguitarguy/Archive-Disabler/issues" target="_blank">https://github.com/chrisguitarguy/Archive-Disabler/issues</a>'
+        );
+        echo '</p>';
+    }
+    
+    /**
+     * Plugin action links filter. Adds a "settings" link to the plugin
+     * actions
+     * 
+     * @since 1.0
+     */
+    function actions( $actions )
+    {
+        $link = admin_url( 'options-reading.php#archive-disabler' );
+        $actions['settings'] = sprintf(
+            '<a href="%s">%s</a>',
+            esc_url( $link ),
+            esc_html__( 'Settings', 'cd-archive-disabler'  )
+        );
+        return $actions;
+    }
+    
+    /**
      * Utility method to fetch all public post types that have archives
      * 
      * @since 1.0
@@ -217,7 +295,7 @@ class CD_AD_Admin_Options
      * @uses get_taxonomies To fetch a list of all taxonomies
      * @return array With taxonomy slugs as the keys and a label as the value
      */
-    function taxonomies()
+    protected function taxonomies()
     {
         $taxes = get_taxonomies(
             array( 'public' => true ),
@@ -237,7 +315,7 @@ class CD_AD_Admin_Options
     }
     
     /**
-     * <lazy>Wrapper callback to echo out lists of options
+     * Wrapper callback to echo out lists of options
      *
      * @since 1.0
      * @access protected
@@ -260,7 +338,7 @@ class CD_AD_Admin_Options
     }
     
     /**
-     * <lazy>Wrapper for add_settings_section so I have to type less</lazy>
+     * Wrapper for add_settings_section so I have to type less
      * 
      * @since 1.0
      * @access protected
