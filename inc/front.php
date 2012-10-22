@@ -49,7 +49,7 @@ function cd_ad_catch_disabled()
         else
         {
             global $wp_query;
-            $wp_query->is_404 = true;
+            $wp_query->set_404();
         }
     }
 }
